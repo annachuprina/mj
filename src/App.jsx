@@ -268,6 +268,18 @@ const galleryItems = [
     alt: 'cosmic love',
     prompt: 'cosmic love',
   },
+  {
+    style: '--sref 6713476973',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/46.jpg`,
+    alt: 'fika',
+    prompt: 'fika',
+  },
+  {
+    style: '--sref 5052008959',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/47.jpg`,
+    alt: 'illustration of crowd in the bus',
+    prompt: 'illustration of crowd in the bus',
+  },
 ]
 
 const getDailyShuffleKey = (date = new Date()) => {

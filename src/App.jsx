@@ -433,7 +433,7 @@ function App() {
                   className="gallery-image"
                   src={item.src}
                   alt={item.alt}
-                  loading={isPriorityImage ? 'eager' : 'lazy'}
+                  loading="eager"
                   decoding="async"
                   fetchPriority={isPriorityImage ? 'high' : 'auto'}
                 />

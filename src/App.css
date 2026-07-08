@@ -116,6 +116,7 @@
   display: block;
   aspect-ratio: 3 / 4;
   min-height: 200px;
+  background: linear-gradient(135deg, #111 0%, #050505 100%);
 }
 
 .copy-style-button {

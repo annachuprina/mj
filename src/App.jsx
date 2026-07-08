@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+
+const PRIORITY_PRELOAD_COUNT = 8
 
 const galleryItems = [
   {
@@ -250,8 +252,75 @@ const galleryItems = [
   },
 ]
 
+const getDailyShuffleKey = (date = new Date()) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+const hashString = (value) => {
+  let hash = 2166136261
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index)
+    hash = Math.imul(hash, 16777619)
+  }
+
+  return hash >>> 0
+}
+
+const createSeededRandom = (seed) => {
+  let state = seed || 1
+
+  return () => {
+    state += 0x6d2b79f5
+    let value = state
+    value = Math.imul(value ^ (value >>> 15), value | 1)
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61)
+
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+const shuffleItemsForDay = (items, dayKey) => {
+  const shuffledItems = [...items]
+  const random = createSeededRandom(hashString(dayKey))
+
+  for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(random() * (index + 1))
+    const currentItem = shuffledItems[index]
+    shuffledItems[index] = shuffledItems[randomIndex]
+    shuffledItems[randomIndex] = currentItem
+  }
+
+  return shuffledItems
+}
+
+const preloadImage = (src) =>
+  new Promise((resolve) => {
+    const image = new Image()
+
+    image.onload = resolve
+    image.onerror = resolve
+    image.src = src
+  })
+
 function App() {
   const [copiedIndex, setCopiedIndex] = useState(null)
+  const [dailyShuffleKey, setDailyShuffleKey] = useState(getDailyShuffleKey)
+  const [loadedPriorityImages, setLoadedPriorityImages] = useState(0)
+  const [isGalleryReady, setIsGalleryReady] = useState(false)
+  const shuffledGalleryItems = useMemo(
+    () => shuffleItemsForDay(galleryItems, dailyShuffleKey),
+    [dailyShuffleKey],
+  )
+  const priorityImageCount = Math.min(PRIORITY_PRELOAD_COUNT, shuffledGalleryItems.length)
+  const loadingProgress =
+    priorityImageCount === 0
+      ? 100
+      : Math.round((loadedPriorityImages / priorityImageCount) * 100)
 
   useEffect(() => {
     if (copiedIndex === null) return
@@ -263,6 +332,46 @@ function App() {
     return () => window.clearTimeout(timeout)
   }, [copiedIndex])
 
+  useEffect(() => {
+    const refreshDailyShuffleKey = () => {
+      setDailyShuffleKey(getDailyShuffleKey())
+    }
+
+    const interval = window.setInterval(refreshDailyShuffleKey, 60000)
+
+    return () => window.clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    let isCancelled = false
+    const priorityItems = shuffledGalleryItems.slice(0, PRIORITY_PRELOAD_COUNT)
+    const remainingItems = shuffledGalleryItems.slice(PRIORITY_PRELOAD_COUNT)
+
+    setLoadedPriorityImages(0)
+    setIsGalleryReady(priorityItems.length === 0)
+
+    const preloadPriorityImages = priorityItems.map((item) =>
+      preloadImage(item.src).then(() => {
+        if (!isCancelled) {
+          setLoadedPriorityImages((count) => count + 1)
+        }
+      }),
+    )
+
+    Promise.all(preloadPriorityImages).then(() => {
+      if (isCancelled) return
+
+      setIsGalleryReady(true)
+      remainingItems.forEach((item) => {
+        preloadImage(item.src)
+      })
+    })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [shuffledGalleryItems])
+
   const handleCopy = async (style, index) => {
     try {
       await navigator.clipboard.writeText(style)
@@ -273,7 +382,17 @@ function App() {
   }
 
   return (
-    <div className="page-shell">
+    <div className={`page-shell${isGalleryReady ? ' is-gallery-ready' : ''}`}>
+      {!isGalleryReady && (
+        <div className="loading-screen" role="status" aria-live="polite">
+          <div className="loading-brand">Anna Chuprina MJ</div>
+          <div className="loading-track" aria-hidden="true">
+            <div className="loading-fill" style={{ width: `${loadingProgress}%` }} />
+          </div>
+          <div className="loading-percent">{loadingProgress}%</div>
+        </div>
+      )}
+
       <header className="page-header">
         <div className="corner-label">Anna Chuprina MJ</div>
       </header>
@@ -287,11 +406,19 @@ function App() {
 
       <section className="gallery-section">
         <div className="gallery-row">
-          {galleryItems.map((item, index) => {
+          {shuffledGalleryItems.map((item, index) => {
             const copied = copiedIndex === index
+            const isPriorityImage = index < PRIORITY_PRELOAD_COUNT
             return (
               <div className="image-card" key={item.src}>
-                <img className="gallery-image" src={item.src} alt={item.alt} />
+                <img
+                  className="gallery-image"
+                  src={item.src}
+                  alt={item.alt}
+                  loading={isPriorityImage ? 'eager' : 'lazy'}
+                  decoding="async"
+                  fetchPriority={isPriorityImage ? 'high' : 'auto'}
+                />
                 <div className="prompt-text">{item.prompt.toLowerCase()}</div>
                 <button
                   className="copy-style-button"

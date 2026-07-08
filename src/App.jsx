@@ -250,6 +250,24 @@ const galleryItems = [
     alt: 'observing world',
     prompt: 'observing world',
   },
+  {
+    style: '--sref 5018343434',
+    src: `${import.meta.env.BASE_URL}images/43.png`,
+    alt: 'hiking',
+    prompt: 'hiking',
+  },
+  {
+    style: '--sref 7158173333',
+    src: `${import.meta.env.BASE_URL}images/44.png`,
+    alt: 'house on a hill',
+    prompt: 'house on a hill',
+  },
+  {
+    style: '--sref 7249723042',
+    src: `${import.meta.env.BASE_URL}images/45.png`,
+    alt: 'cosmic love',
+    prompt: 'cosmic love',
+  },
 ]
 
 const getDailyShuffleKey = (date = new Date()) => {

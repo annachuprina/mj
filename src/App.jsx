@@ -280,6 +280,12 @@ const galleryItems = [
     alt: 'illustration of crowd in the bus',
     prompt: 'illustration of crowd in the bus',
   },
+  {
+    style: '--sref 5017775742',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/48.jpg`,
+    alt: 'illustration of a woman hugging acocker spaniel dog',
+    prompt: 'illustration of a woman hugging acocker spaniel dog',
+  },
 ]
 
 const getDailyShuffleKey = (date = new Date()) => {

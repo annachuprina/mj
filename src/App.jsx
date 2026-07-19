@@ -304,6 +304,12 @@ const galleryItems = [
     alt: 'illustration of peach',
     prompt: 'illustration of peach',
   },
+  {
+    style: '--sref 7833644401',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/52.jpg`,
+    alt: 'footballer',
+    prompt: 'footballer',
+  },
 ]
 
 const getDailyShuffleKey = (date = new Date()) => {

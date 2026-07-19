@@ -283,8 +283,8 @@ const galleryItems = [
   {
     style: '--sref 5017775742',
     src: `${import.meta.env.BASE_URL}images/optimized-small/48.jpg`,
-    alt: 'illustration of a woman hugging acocker spaniel dog',
-    prompt: 'illustration of a woman hugging acocker spaniel dog',
+    alt: 'illustration of a woman hugging a cocker spaniel dog',
+    prompt: 'illustration of a woman hugging a cocker spaniel dog',
   },
   {
     style: '--sref 7055240275',

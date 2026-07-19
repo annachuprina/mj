@@ -1,6 +1,6 @@
 # MJ Styles
 
-A curated gallery of Midjourney style references by Anna Chuprina.
+A static gallery of Midjourney style references by Anna Chuprina.
 
 **Live site:** [annachuprina.github.io/mj](https://annachuprina.github.io/mj/)
 

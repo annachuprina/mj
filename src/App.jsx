@@ -286,6 +286,24 @@ const galleryItems = [
     alt: 'illustration of a woman hugging acocker spaniel dog',
     prompt: 'illustration of a woman hugging acocker spaniel dog',
   },
+  {
+    style: '--sref 7055240275',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/49.jpg`,
+    alt: 'warmth of affections',
+    prompt: 'warmth of affections',
+  },
+  {
+    style: '--sref 4894398940',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/50.jpg`,
+    alt: 'dog is chasing a leaf',
+    prompt: 'dog is chasing a leaf',
+  },
+  {
+    style: '--sref 8310781654',
+    src: `${import.meta.env.BASE_URL}images/optimized-small/51.jpg`,
+    alt: 'illustration of peach',
+    prompt: 'illustration of peach',
+  },
 ]
 
 const getDailyShuffleKey = (date = new Date()) => {
